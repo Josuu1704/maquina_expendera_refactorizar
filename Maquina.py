@@ -1,61 +1,63 @@
-import os;
+import os
 
-Productos = ["Agua", "Refrescos", "Zumos"]
-Precios = [0.50, 0.75, 0.95]
-ReservasMonedas = [20, 20, 20, 20, 20]
-ValoresMonedas = [2, 1, 0.50, 0.20, 0.10, 0.05]
-
-
-def menu(Productos, precios):
-    cont = 0
-    textomenu = ""
-    for nombre in Productos:
-        textomenu += f"{cont + 1} - {nombre} = {precios[cont]} \n"
-        cont += 1
-    textomenu += f"{cont + 1} - Salir"
-    return textomenu
+productos = ["Agua", "Refrescos", "Zumos"]
+precios = [0.50, 0.75, 0.95]
+reserva_monedas = [20, 20, 20, 20, 20]
+valores_monedas = [2, 1, 0.50, 0.20, 0.10, 0.05]
 
 
-def ProductosElegido(opcion, Productos, Precios):
-    if opcion == 1 or opcion == 2 or opcion == 3:
-        return f"\nHas escogido {Productos[opcion - 1]} \nTotal a pagar: {Precios[opcion - 1]}"
-    elif opcion == 4:
+def menu(productos, precios):
+    texto_menu = ""
+    for i, nombre in enumerate(productos):
+        texto_menu += f"{i + 1} - {nombre} = {precios[i]}\n"
+    texto_menu += f"{len(productos) + 1} - Salir"
+    return texto_menu
+
+
+def ProductoElegido(opcion, productos, precios):
+    if opcion in range(1, len(productos) + 1):
+        return f"\nHas escogido {productos[opcion - 1]} \nTotal a pagar: {precios[opcion - 1]}"
+    elif opcion == len(productos) + 1:
         return "Fin del Programa"
 
 
-def MonedasIngresadas(SumaPago, Precios, ReservasMonedas, ValoresMonedas, opcion):
-    precio = Precios[opcion - 1]
-    if SumaPago < precio:
-        return f"Cantidad insuficiente, faltan {round(precio - SumaPago, 2)}"
-    cambio = round(SumaPago - precio, 2)
-    mensaje = f"Pago recibido: {SumaPago} \nCantidad devuelta: {cambio} \n"
-    for i in range(len(ReservasMonedas)):
-        valor = ValoresMonedas[i]
-        while cambio >= valor and ReservasMonedas[i] > 0:
+def MonedasIngresadas(suma_pago, precios, reservas_monedas, valores_monedas, opcion):
+    precio = precios[opcion - 1]
+    if suma_pago < precio:
+        return f"Cantidad insuficiente, faltan {round(precio - suma_pago, 2)}"
+
+    cambio = round(suma_pago - precio, 2)
+    mensaje = f"Pago recibido: {suma_pago} \nCantidad devuelta: {cambio} \n"
+
+    for i in range(len(reservas_monedas)):
+        valor = valores_monedas[i]
+        while cambio >= valor and reservas_monedas[i] > 0:
             cambio = round(cambio - valor, 2)
-            ReservasMonedas[i] -= 1
-    if cambio < 0:
+            reservas_monedas[i] -= 1
+
+    if cambio > 0:
         return "No hay suficiente cambio disponible."
+
     return mensaje + "Pago completado"
 
 
 opcion = 0
-while opcion != 4:
-    continuar = True
-    print(menu(Productos, Precios))
+while opcion != len(productos) + 1:
+    print(menu(productos, precios))
     opcion = int(input("Escoge una opcion: "))
     os.system("cls")
-    if opcion == 4:
-        print(ProductosElegido(opcion, Productos, Precios))
-        continuar = False
+
+    if opcion == len(productos) + 1:
+        print(ProductoElegido(opcion, productos, precios))
+        break
     else:
-        print(ProductosElegido(opcion, Productos, Precios))
+        print(ProductoElegido(opcion, productos, precios))
+
         SumaPago = 0
-        while continuar:
-            print(MonedasIngresadas(SumaPago, Precios, ReservasMonedas, ValoresMonedas, opcion))
-            Pago = float(input(f"Ingresa la moneda para el pago").replace(",", "."))
+        while SumaPago < precios[opcion - 1]:
+            Pago = float(input("Ingresa la moneda para el pago: ").replace(",", "."))
             SumaPago += Pago
-            if SumaPago >= Precios[opcion - 1]:
-                continuar = False
+            print(MonedasIngresadas(SumaPago, precios, reserva_monedas, valores_monedas, opcion))
+
         os.system("cls")
-        print(MonedasIngresadas(SumaPago, Precios, ReservasMonedas, ValoresMonedas, opcion))
+        print("Transacción finalizada. Gracias por su compra!\n")
